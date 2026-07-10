@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hot.modules.hot.dao.KolDao">
+
+	<select id="get" resultType="com.hot.modules.hot.entity.Kol">
+		SELECT
+			a.id,
+			a.`en_name` AS name
+		FROM a_kol a
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="list" resultType="com.hot.modules.hot.entity.Kol">
+		SELECT
+			a.id,
+			a.`en_name` AS name
+		FROM a_kol a
+		WHERE a.del_flag = 0
+		<if test="name != null and name != ''">
+			AND a.`en_name` LIKE CONCAT('%',#{name},'%')
+		</if>
+		ORDER BY a.id DESC
+	</select>
+
+	<insert id="insert" parameterType="com.hot.modules.hot.entity.Kol" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO `a_kol` (
+			`en_name`,
+			`create_user`,
+			`create_time`,
+			`update_user`,
+			`update_time`
+		) VALUES (
+			#{name},
+			#{createUser},
+			NOW(),
+			#{updateUser},
+			NOW()
+		)
+	</insert>
+
+	<update id="update" parameterType="com.hot.modules.hot.entity.Kol">
+		UPDATE `a_kol` SET
+			`en_name` = #{name},
+			`update_user` = #{updateUser},
+			`update_time` = NOW()
+		WHERE id = #{id}
+	</update>
+
+	<update id="delete">
+		UPDATE `a_kol` SET
+		   `del_flag` = 1,
+		   `update_user` = #{updateUser},
+		   `update_time` = NOW()
+		WHERE id = #{id}
+	</update>
+
+	<select id="queryKolName" resultType="java.lang.Integer">
+		SELECT `id` FROM `a_kol` WHERE del_flag = 0 AND `en_name` = #{name}
+	</select>
+
+</mapper>

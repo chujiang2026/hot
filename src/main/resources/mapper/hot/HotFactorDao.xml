@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hot.modules.hot.dao.HotFactorDao">
+
+    <!-- 根据ID查询单条记录 -->
+    <select id="get" resultType="com.hot.modules.hot.entity.HotFactor">
+        SELECT
+            id,
+            channel AS 'channel',
+            video_type AS 'videoType',
+            sales_k1 AS 'salesK1',
+            coop_k2 AS 'coopK2'
+        FROM `a_hot_factor`
+        WHERE id = #{id}
+    </select>
+
+    <!-- 查询列表（支持条件查询） -->
+    <select id="list" resultType="com.hot.modules.hot.entity.HotFactor">
+        SELECT
+            a.id,
+            a.channel AS 'channel',
+            a.video_type AS 'videoType',
+            d.`label` AS 'videoTypes',
+            a.sales_k1 AS 'salesK1',
+            a.coop_k2 AS 'coopK2'
+        FROM `a_hot_factor` a
+        LEFT JOIN `sys_dict` d ON d.`value` = a.`video_type` AND d.`type` = 'vid_type' AND d.`del_flag` = 0
+        WHERE a.`del_flag` = 0
+        ORDER BY a.create_time DESC
+    </select>
+
+    <!-- 新增记录 -->
+    <insert id="insert" parameterType="com.hot.modules.hot.entity.HotFactor" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO `a_hot_factor` (
+            `channel`,
+            `video_type`,
+            `sales_k1`,
+            `coop_k2`,
+            `create_user`,
+            `create_time`,
+            `update_user`,
+            `update_time`
+        ) VALUES (
+            #{channel},
+            #{videoType},
+            #{salesK1},
+            #{coopK2},
+            #{createUser},
+            NOW(),
+            #{updateUser},
+            NOW()
+        )
+    </insert>
+
+    <!-- 更新记录 -->
+    <update id="update" parameterType="com.hot.modules.hot.entity.HotFactor">
+        UPDATE `a_hot_factor` SET
+            `sales_k1` = #{salesK1},
+            `coop_k2` = #{coopK2},
+            `update_user` = #{updateUser},
+            `update_time` = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <!-- 删除记录（逻辑删除） -->
+    <update id="delete">
+        UPDATE `a_hot_factor` SET
+            `del_flag` = '1',
+            `update_user` = #{updateUser},
+            `update_time` = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <select id="getNotId" resultType="com.hot.modules.hot.entity.HotFactor">
+        SELECT SUM(sales_k1) AS 'salesK1',SUM(coop_k2) AS 'coopK2' FROM `a_hot_factor` WHERE id != #{id}
+    </select>
+
+</mapper>

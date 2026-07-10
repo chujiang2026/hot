@@ -1,0 +1,418 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hot.modules.hot.dao.HotDao">
+
+	<select id="get" resultType="com.hot.modules.hot.entity.Hot">
+		SELECT
+			a.id,
+			a.`name`,
+			a.arch_name AS 'archName',
+			d.`label` AS 'state',
+			a.create_time AS 'createTime'
+		FROM `a_hot` a
+		JOIN `a_hot_basic` b ON b.`hot_id` = a.`id` AND b.`del_flag` = 0
+		LEFT JOIN `sys_dict` d ON d.`value` = a.`state` AND d.`type` = 'hot_coop_state' AND d.`del_flag` = 0
+		WHERE b.id = #{id}
+	</select>
+
+	<select id="getBasicList" resultType="com.hot.modules.hot.entity.HotBasic">
+		SELECT
+			a.id,
+			a.hots_id AS 'hotsId',
+			a.channel,
+			a.nickname,
+			a.country,
+			a.contact,
+			c2.name AS 'countrys',
+			a.hot_level AS 'hotLevel',
+			GROUP_CONCAT(DISTINCT k.id) AS 'hotType',
+			GROUP_CONCAT(DISTINCT k.en_name) AS 'hotTypes',
+			a.follower,
+			a.juxing_url AS 'juxingUrl',
+			a.url_link AS 'urlLink',
+			a.avg_play_count AS 'avgPlayCount',
+			a.avg_iact_rate AS 'avgIactRate',
+			a.long_avg_views AS 'longAvgViews',
+			a.long_iact_rate AS 'longIactRate',
+			a.short_avg_views AS 'shortAvgViews',
+			a.short_iact_rate AS 'shortIactRate',
+			a.score_level AS 'scoreLevel',
+			a.`is_match` AS 'isMatch',
+			d1.`label` AS 'isMatchs'
+		FROM `a_hot_basic` a
+		LEFT JOIN `a_country` c2 ON c2.`id` = a.`country`
+		LEFT JOIN `sys_dict` d1 ON d1.`value` = a.`is_match` AND d1.`type` = 'is_match' AND d1.`del_flag` = 0
+		LEFT JOIN `a_hot_type` t ON t.hotb_id = a.id
+		LEFT JOIN `a_kol` k ON k.id = t.kol_id
+		WHERE a.del_flag = 0 AND a.hot_id = #{hotId}
+		GROUP BY a.id
+	</select>
+
+	<select id="list" resultType="com.hot.modules.hot.entity.Hot">
+		SELECT
+			a.state,
+			a.`name`,
+			a.arch_name AS 'archName',
+			d.`label` AS 'states',
+			a.create_time AS 'createTime',
+			b.id AS 'id',
+			b.hots_id AS 'hotsId',
+			b.channel,
+			b.nickname,
+			b.country,
+			c2.name AS 'countrys',
+			b.contact,
+			b.avg_play_count AS 'avgPlayCount',
+			b.score_level AS 'scoreLevel',
+			b.`is_match` AS 'isMatch',
+			d1.`label` AS 'isMatchs'
+		FROM `a_hot` a
+		JOIN `a_hot_basic` b ON b.`hot_id` = a.`id` AND b.`del_flag` = 0
+		LEFT JOIN `a_hot_coop` c ON c.`hotb_id` = b.`id` AND c.`del_flag` = 0
+		LEFT JOIN `a_hot_coop_product` c1 ON c1.`coop_id` = c.`id` AND c1.`del_flag` = 0
+		LEFT JOIN `sys_dict` d ON d.`value` = a.`state` AND d.`type` = 'hot_coop_state' AND d.`del_flag` = 0
+		LEFT JOIN `sys_dict` d1 ON d1.`value` = b.`is_match` AND d1.`type` = 'is_match' AND d1.`del_flag` = 0
+		LEFT JOIN `b_follower` f ON b.`follower` BETWEEN f.`s_num` AND IFNULL(f.`e_num`,b.`follower`)
+		LEFT JOIN `a_country` c2 ON c2.`id` = b.`country`
+		LEFT JOIN `a_hot_type` t ON t.hotb_id = b.id
+		JOIN `sys_user_country` uc ON uc.`country_id` = b.`country`
+		WHERE a.`del_flag` = 0 AND uc.`user_id` = #{userid}
+		<if test="country != null and country != ''">
+			AND b.`country` = #{country}
+		</if>
+		<if test="hotLevel != null and hotLevel != ''">
+			AND b.`hot_level` = #{hotLevel}
+		</if>
+		<if test="hotType != null and hotType != ''">
+			AND t.kol_id = #{hotType}
+		</if>
+		<if test="channel != null and channel !=''">
+			AND b.`channel` = #{channel}
+		</if>
+		<if test="hotsId != null and hotsId != ''">
+			AND b.`hots_id` LIKE CONCAT('%',#{hotsId},'%')
+		</if>
+		<if test="isMatch != null">
+			AND b.`is_match` = #{isMatch}
+		</if>
+		<if test="state != null and state !=''">
+			AND a.`state` = #{state}
+		</if>
+		<if test="productName != null and productName != ''">
+			AND c1.`product_name` LIKE CONCAT('%',#{productName},'%')
+		</if>
+		<if test="coopFee != null and coopFee !=''">
+			AND c1.`coop_fee` &lt;= #{coopFee}
+		</if>
+		<if test="follower != null and follower != ''">
+			AND f.`id` = #{follower}
+		</if>
+		<if test="ids != null and ids.length > 0">
+			AND b.`id` IN
+			<foreach item="id" collection="ids" index="index" open="(" close=")" separator=",">
+				#{id}
+			</foreach>
+		</if>
+		GROUP BY b.`id` ORDER BY a.create_time DESC
+	</select>
+
+	<insert id="insert" parameterType="com.hot.modules.hot.entity.Hot" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO `a_hot` (
+			`name`,
+			`arch_name`,
+			`state`,
+			`create_user`,
+			`create_time`,
+			`update_user`,
+			`update_time`
+		) VALUES (
+			#{name},
+			#{archName},
+			#{state},
+			#{createUser},
+			NOW(),
+			#{updateUser},
+			NOW()
+		)
+	</insert>
+
+	<update id="state" parameterType="com.hot.modules.hot.entity.Hot">
+		UPDATE `a_hot` SET
+			`state` = #{state},
+			<if test="deadDate != null and deadDate != ''">
+				`dead_date` = #{deadDate},
+			</if>
+			<if test="reason != null and reason != ''">
+				`reason` = #{reason},
+			</if>
+			`update_user` = #{updateUser},
+			`update_time` = NOW()
+		WHERE id = #{id}
+	</update>
+
+	<select id="getBasic" resultType="com.hot.modules.hot.entity.HotBasic">
+		SELECT
+			id,
+			hot_id AS 'hotId',
+			hots_id AS 'hotsId'
+		FROM `a_hot_basic`
+		WHERE del_flag = 0 AND hots_id = #{hotsId} AND channel = #{channel} LIMIT 1
+	</select>
+
+	<insert id="insertBasic" parameterType="com.hot.modules.hot.entity.HotBasic" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO `a_hot_basic` (
+			`hot_id`,
+			`channel`,
+			`hots_id`,
+			`nickname`,
+			`country`,
+			`contact`,
+			`hot_level`,
+			`is_hotp`,
+			`follower`,
+			`juxing_url`,
+			`url_link`,
+			`avg_play_count`,
+			`avg_iact_rate`,
+			`long_avg_views`,
+			`long_iact_rate`,
+			`short_avg_views`,
+			`short_iact_rate`,
+			`create_user`,
+			`create_time`,
+			`update_user`,
+			`update_time`
+		) VALUES (
+			#{hotId},
+			#{channel},
+			#{hotsId},
+			#{nickname},
+			#{country},
+			#{contact},
+			#{hotLevel},
+			#{isHotp},
+			#{follower},
+			#{juxingUrl},
+			#{urlLink},
+			#{avgPlayCount},
+			#{avgIactRate},
+			#{longAvgViews},
+			#{longIactRate},
+			#{shortAvgViews},
+			#{shortIactRate},
+			#{createUser},
+			NOW(),
+			#{updateUser},
+			NOW()
+		)
+	</insert>
+
+	<update id="updateBasic">
+		UPDATE `a_hot_basic` SET
+			`hots_id` = #{hotsId},
+			`nickname` = #{nickname},
+			`country` = #{country},
+			`contact` = #{contact},
+			`hot_level` = #{hotLevel},
+			`is_hotp` = #{isHotp},
+			`follower` = #{follower},
+			`juxing_url` = #{juxingUrl},
+			`url_link` = #{urlLink},
+			`avg_play_count` = #{avgPlayCount},
+			`avg_iact_rate` = #{avgIactRate},
+			`long_avg_views` = #{longAvgViews},
+			`long_iact_rate` = #{longIactRate},
+			`short_avg_views` = #{shortAvgViews},
+			`short_iact_rate` = #{shortIactRate},
+			`update_user` = #{updateUser},
+			`update_time` = NOW()
+		WHERE id = #{id}
+	</update>
+
+	<select id="invit" resultType="com.hot.modules.hot.entity.HotInvit">
+		SELECT
+			a.id,
+			a.doc_num AS 'docNum',
+			a.bd_name AS 'bdName',
+			a.conn_time AS 'connTime',
+			a.agcc_time AS 'agccTime',
+			a.hots_id AS 'hotsId',
+			a.channel,
+			a.country,
+			c2.name AS 'countrys',
+			a.state,
+			d.label AS 'states',
+			a.create_time AS 'createTime'
+		FROM `a_hot` h
+		JOIN `a_hot_basic` hb ON hb.hot_id = h.id AND hb.del_flag = 0
+		JOIN `a_hot_invit` a ON a.hotb_id = hb.id AND a.del_flag = 0
+		LEFT JOIN `sys_dict` d ON d.value = a.state AND d.type = 'hot_state' AND d.del_flag = 0
+		LEFT JOIN `a_country` c2 ON c2.`id` = a.`country`
+		JOIN `sys_user_country` uc ON uc.`country_id` = a.`country`
+		WHERE h.`del_flag` = 0 AND uc.`user_id` = #{userid}
+		<if test="id != null and id != ''">
+			AND h.id = #{id}
+		</if>
+		<if test="sdate != null and sdate !=''">
+			AND a.`create_time` >= #{sdate}
+		</if>
+		  <if test="edate != null and edate !=''">
+			AND a.`create_time` &lt;= #{edate}
+		</if>
+		<if test="country != null and country != ''">
+			AND a.`country` LIKE CONCAT('%',#{country},'%')
+		</if>
+		<if test="bdName != null and bdName != ''">
+			AND a.`bd_name` LIKE CONCAT('%',#{bdName},'%')
+		</if>
+		<if test="state != null and state != ''">
+			AND a.`state` = #{state}
+		</if>
+		<if test="channel != null and channel != ''">
+			AND a.`channel` = #{channel}
+		</if>
+		<if test="hotsId != null and hotsId != ''">
+			AND a.`hots_id` LIKE CONCAT('%',#{hotsId},'%')
+		</if>
+	</select>
+
+	<select id="coop" resultType="com.hot.modules.hot.entity.HotCoop">
+		SELECT
+			a.id,
+			a.doc_num AS 'docNum',
+			a.bd_name AS 'bdName',
+			a.hots_id AS 'hotsId',
+			a.channel,
+			b.product_model AS 'productModel',
+			b.product_color AS 'productColor',
+			a.state,
+			d.label AS 'states',
+			a.create_time AS 'createTime'
+		FROM `a_hot` h
+		JOIN `a_hot_basic` hb ON hb.hot_id = h.id AND hb.del_flag = 0
+		JOIN `a_hot_coop` a ON a.hotb_id = hb.id AND a.del_flag = 0
+		LEFT JOIN `a_hot_coop_product` b ON b.`coop_id` = a.`id` AND b.`del_flag` = 0
+		LEFT JOIN `sys_dict` d ON d.value = a.state AND d.type = 'hot_state' AND d.del_flag = 0
+		JOIN `sys_user_country` uc ON uc.`country_id` = a.`country`
+		WHERE h.del_flag = 0 AND uc.`user_id` = #{userid}
+		<if test="id != null and id != ''">
+			AND h.id = #{id}
+		</if>
+		<if test="sdate != null and sdate !=''">
+			AND a.`create_time` >= #{sdate}
+		</if>
+		<if test="edate != null and edate !=''">
+			AND a.`create_time` &lt;= #{edate}
+		</if>
+		<if test="country != null and country != ''">
+			AND a.`country` LIKE CONCAT('%',#{country},'%')
+		</if>
+		<if test="bdName != null and bdName != ''">
+			AND a.`bd_name` LIKE CONCAT('%',#{bdName},'%')
+		</if>
+		<if test="state != null and state != ''">
+			AND a.`state` = #{state}
+		</if>
+		<if test="channel != null and channel != ''">
+			AND a.`channel` = #{channel}
+		</if>
+		<if test="hotsId != null and hotsId != ''">
+			AND a.`hots_id` LIKE CONCAT('%',#{hotsId},'%')
+		</if>
+	</select>
+
+	<update id="updateLevel">
+		UPDATE `a_hot_basic` a JOIN `b_follower` b ON a.follower BETWEEN b.s_num AND IFNULL(b.e_num,a.follower) SET a.hot_level = b.name WHERE a.follower IS NOT NULL;
+	</update>
+
+	<select id="expList" resultType="com.hot.modules.hot.entity.HotBasic">
+		SELECT
+			b.id,
+			b.hots_id AS 'hotsId',
+			b.channel,
+			b.nickname,
+			b.country,
+			b.contact,
+			b.hot_level AS 'hotLevel',
+			GROUP_CONCAT(DISTINCT k.id) AS 'hotType',
+			GROUP_CONCAT(DISTINCT k.en_name) AS 'hotTypes',
+			b.follower,
+			b.juxing_url AS 'juxingUrl',
+			b.url_link AS 'urlLink',
+			b.avg_play_count AS 'avgPlayCount',
+			b.avg_iact_rate AS 'avgIactRate',
+			b.long_avg_views AS 'longAvgViews',
+			b.long_iact_rate AS 'longIactRate',
+			b.short_avg_views AS 'shortAvgViews',
+			b.short_iact_rate AS 'shortIactRate',
+			b.score_level AS 'scoreLevel'
+		FROM `a_hot` a
+		JOIN `a_hot_basic` b ON b.`hot_id` = a.`id` AND b.`del_flag` = 0
+		LEFT JOIN `a_hot_coop` c ON c.`hotb_id` = b.`id` AND c.`del_flag` = 0
+		LEFT JOIN `a_hot_coop_product` c1 ON c1.`coop_id` = c.`id` AND c1.`del_flag` = 0
+		LEFT JOIN `sys_dict` d ON d.`value` = a.`state` AND d.`type` = 'hot_coop_state' AND d.`del_flag` = 0
+		LEFT JOIN `sys_dict` d1 ON d1.`value` = b.`is_match` AND d1.`type` = 'is_match' AND d1.`del_flag` = 0
+		LEFT JOIN `b_follower` f ON b.`follower` BETWEEN f.`s_num` AND IFNULL(f.`e_num`,b.`follower`)
+		LEFT JOIN `a_hot_type` t ON t.hotb_id = a.id
+		LEFT JOIN `a_kol` k ON k.id = t.kol_id
+		JOIN `sys_user_country` uc ON uc.`country_id` = b.`country`
+		WHERE a.`del_flag` = 0 AND uc.`user_id` = #{userid}
+		<if test="country != null and country != ''">
+			AND b.`country` LIKE CONCAT('%',#{country},'%')
+		</if>
+		<if test="hotLevel != null and hotLevel != ''">
+			AND b.`hot_level` = #{hotLevel}
+		</if>
+		<if test="hotType != null and hotType != ''">
+			AND b.`hot_type` LIKE CONCAT('%',#{hotType},'%')
+		</if>
+		<if test="channel != null and channel !=''">
+			AND b.`channel` = #{channel}
+		</if>
+		<if test="hotsId != null and hotsId != ''">
+			AND b.`hots_id` LIKE CONCAT('%',#{hotsId},'%')
+		</if>
+		<if test="isMatch != null and isMatch !=''">
+			AND b.`is_match` = #{isMatch}
+		</if>
+		<if test="state != null and state !=''">
+			AND a.`state` = #{state}
+		</if>
+		<if test="productName != null and productName != ''">
+			AND c1.`product_name` LIKE CONCAT('%',#{productName},'%')
+		</if>
+		<if test="coopFee != null and coopFee !=''">
+			AND c1.`coop_fee` &lt;= #{coopFee}
+		</if>
+		<if test="follower != null and follower != ''">
+			AND f.`id` = #{follower}
+		</if>
+		<if test="ids != null and ids.length > 0">
+			AND b.`id` IN
+			<foreach item="id" collection="ids" index="index" open="(" close=")" separator=",">
+				#{id}
+			</foreach>
+		</if>
+		GROUP BY b.`id` ORDER BY a.create_time DESC
+	</select>
+
+	<select id="queryHotsIdState" resultType="java.lang.Integer">
+		SELECT
+			h.state
+		FROM `a_hot` h
+		JOIN `a_hot_basic` hb ON hb.hot_id = h.id
+		WHERE hb.`id` = #{hotbId}
+	</select>
+	
+	<delete id="deleteHotType">
+		DELETE FROM `a_hot_type` WHERE `hotb_id` = #{id}
+	</delete>
+
+	<insert id="insertHotType">
+		INSERT INTO `a_hot_type`(`hotb_id`,`kol_id`) VALUES
+		<foreach item="item" index="index" collection="ids" separator=",">
+			(#{id},#{item})
+		</foreach>
+	</insert>
+
+</mapper>

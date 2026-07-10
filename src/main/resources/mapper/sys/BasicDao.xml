@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hot.modules.sys.dao.BasicDao">
+
+	<select id="tree" resultType="com.hot.modules.sys.entity.BasicTree">
+		CALL basic_tree(#{userid},#{name},#{param});
+	</select>
+
+	<select id="data" resultType="java.util.Map">
+		CALL basic_data(#{userid},#{name},#{param});
+	</select>
+
+	<select id="user" resultType="com.hot.modules.sys.entity.SysUser">
+		CALL basic_user(#{id});
+	</select>
+
+	<select id="menu" resultType="com.hot.modules.sys.entity.SysMenu">
+		CALL basic_menu(#{userid});
+	</select>
+
+	<resultMap id="moduMap" type="com.hot.modules.sys.entity.SysMenu">
+		<id property="id" column="id"/>
+		<result property="parentId" column="parent_id"/>
+		<result property="title" column="title"/>
+		<result property="path" column="path"/>
+		<result property="component" column="component"/>
+		<result property="sign" column="sign"/>
+		<result property="icon" column="icon"/>
+		<result property="sort" column="sort"/>
+		<result property="type" column="type"/>
+		<collection property="modu" ofType="com.hot.modules.sys.entity.SysModu">
+			<id property="id" column="modu.id"/>
+			<result property="title" column="modu.title"/>
+			<result property="path" column="modu.path"/>
+			<result property="component" column="modu.component"/>
+			<result property="sign" column="modu.sign"/>
+			<result property="icon" column="modu.icon"/>
+			<result property="sort" column="modu.sort"/>
+		</collection>
+	</resultMap>
+
+	<select id="modu" resultMap="moduMap">
+		CALL basic_modu(#{userid});
+	</select>
+
+	<resultMap id="buttMap" type="com.hot.modules.sys.entity.SysMenu">
+		<id property="id" column="id"/>
+		<result property="parentId" column="parent_id"/>
+		<result property="title" column="title"/>
+		<result property="path" column="path"/>
+		<result property="component" column="component"/>
+		<result property="sign" column="sign"/>
+		<result property="icon" column="icon"/>
+		<result property="sort" column="sort"/>
+		<result property="type" column="type"/>
+		<collection property="butt" ofType="com.hot.modules.sys.entity.SysButt">
+			<id property="id" column="butt.id"/>
+			<result property="title" column="butt.title"/>
+			<result property="sign" column="butt.sign"/>
+			<result property="icon" column="butt.icon"/>
+			<result property="sort" column="butt.sort"/>
+		</collection>
+	</resultMap>
+
+	<select id="butt" resultMap="buttMap">
+		CALL basic_butt(#{userid});
+	</select>
+
+	<select id="product" resultType="com.hot.modules.hot.entity.Product">
+		SELECT
+			material_id AS id,
+			material_id AS erpCode,
+			material_id AS name,
+			model_number AS model,
+			color,
+			create_time AS createTime,
+			update_time AS updateTime
+		FROM `erp_material`
+		WHERE del_flag = 0
+	</select>
+
+	<select id="field" resultType="com.hot.modules.sys.entity.SysField">
+		CALL basic_field(#{userid});
+	</select>
+
+	<select id="getserial" resultType="java.lang.String">
+		CALL b_serial(#{type});
+	</select>
+
+	<insert id="insertFsLog">
+		INSERT INTO `fs_log` (`type`,`json`) VALUES (#{type},#{json})
+	</insert>
+
+</mapper>

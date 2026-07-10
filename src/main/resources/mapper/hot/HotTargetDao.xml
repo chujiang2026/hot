@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hot.modules.hot.dao.HotTargetDao">
+
+    <!-- 根据ID查询单条记录 -->
+    <select id="get" resultType="com.hot.modules.hot.entity.HotTarget">
+        SELECT
+            a.id,
+            a.country AS 'country',
+            c2.name AS 'countrys',
+            a.channel AS 'channel',
+            a.hot_type AS 'hotType',
+            a.hot_level AS 'hotLevel',
+            a.video_type AS 'videoType',
+            a.view_target AS 'viewTarget',
+            a.iactr_target AS 'iactrTarget',
+            a.clickr_target AS 'clickrTarget',
+            a.conver_target AS 'converTarget',
+            a.cpm_target AS 'cpmTarget',
+            a.roas_target AS 'roasTarget'
+        FROM `a_hot_target` a
+        LEFT JOIN `a_country` c2 ON c2.`id` = a.`country`
+        WHERE id = #{id} AND del_flag = '0'
+    </select>
+
+    <!-- 查询列表（支持条件查询） -->
+    <select id="list" resultType="com.hot.modules.hot.entity.HotTarget">
+        SELECT
+            a.id,
+            a.country AS 'country',
+            c2.name AS 'countrys',
+            a.channel AS 'channel',
+            a.hot_type AS 'hotType',
+            d1.`label` AS 'hotTypes',
+            a.hot_level AS 'hotLevel',
+            f.`name` AS 'hotLevels',
+            a.video_type AS 'videoType',
+            d2.`label` AS 'videoTypes',
+            a.view_target AS 'viewTarget',
+            a.iactr_target AS 'iactrTarget',
+            a.clickr_target AS 'clickrTarget',
+            a.conver_target AS 'converTarget',
+            a.cpm_target AS 'cpmTarget',
+            a.roas_target AS 'roasTarget'
+        FROM `a_hot_target` a
+        LEFT JOIN `b_target_level` f ON f.`id` = a.hot_level
+        LEFT JOIN `sys_dict` d1 ON d1.`value` = a.hot_type AND d1.`type` = 'hot_types' AND d1.`del_flag` = 0
+        LEFT JOIN `sys_dict` d2 ON d2.`value` = a.video_type AND d2.`type` = 'vid_type' AND d2.`del_flag` = 0
+        LEFT JOIN `a_country` c2 ON c2.`id` = a.`country`
+        JOIN `sys_user_country` uc ON uc.`country_id` = a.`country`
+        WHERE a.`del_flag` = 0 AND uc.`user_id` = #{userid}
+        <if test="country != null and country != ''">
+            AND a.country = #{country}
+        </if>
+        <if test="channel != null and channel != ''">
+            AND a.channel = #{channel}
+        </if>
+        <if test="hotType != null and hotType != ''">
+            AND a.hot_type = #{hotType}
+        </if>
+        <if test="hotLevel != null and hotLevel != ''">
+            AND a.hot_level = #{hotLevel}
+        </if>
+        <if test="videoType != null and videoType != ''">
+            AND a.video_type = #{videoType}
+        </if>
+        ORDER BY a.create_time DESC
+    </select>
+
+    <!-- 新增记录 -->
+    <insert id="insert" parameterType="com.hot.modules.hot.entity.HotTarget" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO `a_hot_target` (
+            `country`,
+            `channel`,
+            `hot_type`,
+            `hot_level`,
+            `video_type`,
+            `view_target`,
+            `iactr_target`,
+            `clickr_target`,
+            `conver_target`,
+            `cpm_target`,
+            `roas_target`,
+            `create_user`,
+            `create_time`,
+            `update_user`,
+            `update_time`,
+            `del_flag`
+        ) VALUES (
+            #{country},
+            #{channel},
+            #{hotType},
+            #{hotLevel},
+            #{videoType},
+            #{viewTarget},
+            #{iactrTarget},
+            #{clickrTarget},
+            #{converTarget},
+            #{cpmTarget},
+            #{roasTarget},
+            #{createUser},
+            NOW(),
+            #{updateUser},
+            NOW(),
+            '0'
+        )
+    </insert>
+
+    <!-- 更新记录 -->
+    <update id="update" parameterType="com.hot.modules.hot.entity.HotTarget">
+        UPDATE `a_hot_target` SET
+            `country` = #{country},
+            `channel` = #{channel},
+            `hot_type` = #{hotType},
+            `hot_level` = #{hotLevel},
+            `video_type` = #{videoType},
+            `view_target` = #{viewTarget},
+            `iactr_target` = #{iactrTarget},
+            `clickr_target` = #{clickrTarget},
+            `conver_target` = #{converTarget},
+            `cpm_target` = #{cpmTarget},
+            `roas_target` = #{roasTarget},
+            `update_user` = #{updateUser},
+            `update_time` = NOW()
+        WHERE id = #{id} AND del_flag = '0'
+    </update>
+
+    <!-- 删除记录（逻辑删除） -->
+    <update id="delete">
+        UPDATE `a_hot_target` SET
+            `del_flag` = '1',
+            `update_user` = #{updateUser},
+            `update_time` = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <select id="getTarget">
+        SELECT id FROM `a_hot_target` WHERE del_flag = 0 AND country = #{country} AND `channel` = #{channel} AND hot_type = #{hotType} AND hot_level = #{hotLevel} AND video_type = #{videoType} LIMIT 1
+    </select>
+
+</mapper>

@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hot.modules.sys.dao.SysUserDao">
+
+    <resultMap id="userMap" type="com.hot.modules.sys.entity.SysUser">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="loginname" column="login_name"/>
+        <result property="percode" column="per_code"/>
+        <result property="depname" column="depname"/>
+        <result property="phone" column="phone"/>
+        <result property="userType" column="user_type"/>
+        <result property="loginflag" column="login_flag"/>
+        <result property="menurole" column="menu_role"/>
+        <result property="modurole" column="modu_role"/>
+        <result property="buttrole" column="butt_role"/>
+        <result property="datarole" column="data_role"/>
+        <result property="remarks" column="remarks"/>
+        <result property="createTime" column="createTime"/>
+        <collection property="buttlist" ofType="integer" column="butt_role_id" javaType="java.util.ArrayList">
+            <id property="id" column="butt_role_id"/>
+        </collection>
+        <collection property="datalist" ofType="integer" column="data_id" javaType="java.util.ArrayList">
+            <id property="id" column="data_id"/>
+        </collection>
+        <collection property="menulist" ofType="integer" column="menu_role_id" javaType="java.util.ArrayList">
+            <id property="id" column="menu_role_id"/>
+        </collection>
+        <collection property="modulist" ofType="integer" column="modu_role_id" javaType="java.util.ArrayList">
+            <id property="id" column="modu_role_id"/>
+        </collection>
+        <collection property="countrylist" ofType="integer" column="country_id" javaType="java.util.ArrayList">
+            <id property="id" column="country_id"/>
+        </collection>
+    </resultMap>
+
+    <select id="get" resultMap="userMap">
+        SELECT
+            a.id,
+            a.`name`,
+            a.login_name,
+            a.per_code,
+            a.depname,
+            a.phone,
+            a.user_type,
+            a.login_flag,
+            a.menu_role,
+            a.modu_role,
+            a.butt_role,
+            a.data_role,
+            a.remarks,
+            b.`butt_role_id`,
+            c.`data_id`,
+            d.`menu_role_id`,
+            e.`modu_role_id`,
+            g.country_id,
+            DATE_FORMAT(a.create_time,'%Y-%m-%d %H:%i:%s') AS 'createTime'
+        FROM `sys_user` a
+        LEFT JOIN `sys_user_butt` b ON b.`user_id` = a.`id`
+        LEFT JOIN `sys_user_data` c ON c.`user_id` = a.`id`
+        LEFT JOIN `sys_user_menu` d ON d.`user_id` = a.`id`
+        LEFT JOIN `sys_user_modu` e ON e.`user_id` = a.`id`
+        LEFT JOIN `sys_user_country` g ON g.`user_id` = a.`id`
+        WHERE a.`id` = #{id}
+    </select>
+
+    <select id="list" resultType="com.hot.modules.sys.entity.SysUser">
+        SELECT
+            a.id,
+            a.`name`,
+            a.login_name AS 'loginname',
+            a.per_code AS 'percode',
+            a.depname,
+            a.phone,
+            a.user_type AS 'userType',
+            a.login_flag AS 'loginflag',
+            DATE_FORMAT(a.create_time,'%Y-%m-%d %H:%i:%s') AS 'createTime'
+        FROM `sys_user` a
+        WHERE a.del_flag = 0
+        <if test="name != null and name != ''">
+            AND a.`name` LIKE CONCAT('%', #{name}, '%')
+        </if>
+        <if test="loginname != null and loginname != ''">
+            AND a.login_name LIKE CONCAT('%', #{loginname}, '%')
+        </if>
+        <if test="percode != null and percode != ''">
+            AND a.per_code LIKE CONCAT('%', #{percode}, '%')
+        </if>
+        <if test="depname != null and depname != ''">
+            AND a.depname LIKE CONCAT('%', #{depname}, '%')
+        </if>
+        <if test="loginflag != null">
+            AND a.login_flag = #{loginflag}
+        </if>
+        <if test="userType != null and userType != ''">
+            AND a.user_type = #{userType}
+        </if>
+        ORDER BY a.update_time DESC
+    </select>
+
+    <insert id="insert">
+        INSERT INTO `sys_user`(
+            id,
+            `name`,
+            login_name,
+            pass_word,
+            per_code,
+            depname,
+            user_type,
+            phone,
+            login_flag,
+            menu_role,
+            modu_role,
+            butt_role,
+            data_role,
+            create_user,
+            create_time,
+            update_user,
+            update_time,
+            remarks
+        ) VALUES (
+            #{id},
+            #{name},
+            #{loginname},
+            #{password},
+            #{percode},
+            #{depname},
+            #{userType},
+            #{phone},
+            #{loginflag},
+            #{menurole},
+            #{modurole},
+            #{buttrole},
+            #{datarole},
+            #{createUser},
+            NOW(),
+            #{createUser},
+            NOW(),
+            #{remarks}
+        )
+    </insert>
+
+    <update id="update">
+        UPDATE `sys_user` SET
+            `name` = #{name},
+            <if test="password != null and password != ''">
+                pass_word = #{password},
+            </if>
+            per_code = #{percode},
+            depname = #{depname},
+            user_type = #{userType},
+            phone = #{phone},
+            login_flag = #{loginflag},
+            menu_role = #{menurole},
+            modu_role = #{modurole},
+            butt_role = #{buttrole},
+            data_role = #{datarole},
+            update_user = #{createUser},
+            update_time = NOW(),
+            remarks= #{remarks}
+        WHERE id = #{id}
+    </update>
+
+    <update id="delete">
+        UPDATE `sys_user` SET
+            del_flag = 1,
+            update_user = #{createUser},
+            update_time = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <update id="updatePassword">
+        UPDATE `sys_user` SET
+            `pass_word` = #{password}
+        WHERE id = #{id}
+    </update>
+
+    <insert id="insertButt">
+        INSERT INTO `sys_user_butt`(
+            `user_id`,
+            `butt_role_id`
+        ) VALUES
+        <foreach collection="buttlist" item="item" separator=",">
+            (#{id},#{item})
+        </foreach>
+    </insert>
+
+    <delete id="deleteButt">
+        DELETE FROM `sys_user_butt` WHERE user_id = #{id}
+    </delete>
+
+    <insert id="insertData">
+        INSERT INTO `sys_user_data`(
+            `user_id`,
+            `data_id`
+        ) VALUES
+        <foreach collection="datalist" item="item" separator=",">
+            (#{id},#{item})
+        </foreach>
+    </insert>
+
+    <delete id="deleteData">
+        DELETE FROM `sys_user_data` WHERE user_id = #{id}
+    </delete>
+
+    <insert id="insertMenu">
+        INSERT INTO `sys_user_menu`(
+            `user_id`,
+            `menu_role_id`
+        ) VALUES
+        <foreach collection="menulist" item="item" separator=",">
+            (#{id},#{item})
+        </foreach>
+    </insert>
+
+    <delete id="deleteMenu">
+        DELETE FROM `sys_user_menu` WHERE user_id = #{id}
+    </delete>
+
+    <insert id="insertModu">
+        INSERT INTO `sys_user_modu`(
+            `user_id`,
+            `modu_role_id`
+        ) VALUES
+        <foreach collection="modulist" item="item" separator=",">
+            (#{id},#{item})
+        </foreach>
+    </insert>
+
+    <delete id="deleteModu">
+        DELETE FROM `sys_user_modu` WHERE user_id = #{id}
+    </delete>
+
+    <select id="getByLoginname" resultType="com.hot.modules.sys.entity.SysUser">
+        SELECT
+            id,
+            `name`,
+            login_name AS 'loginname',
+            pass_word AS 'password',
+            create_time AS 'createTime',
+            phone AS 'phone',
+            login_ip AS 'loginip',
+            login_date AS 'logindate',
+            login_flag AS 'loginflag',
+            passw_time AS 'passwTime',
+            error_time AS 'errorTime',
+            error_count AS 'errorCount',
+            remarks
+        FROM `sys_user`
+        WHERE del_flag = 0 AND login_name = #{loginname} LIMIT 1
+    </select>
+
+    <update id="updateError">
+        UPDATE `sys_user`
+        SET login_flag = #{loginflag},
+            error_time = #{errorTime},
+            error_count = #{errorCount}
+        WHERE id = #{id}
+    </update>
+
+    <update id="updateLogin">
+        UPDATE `sys_user` SET
+            login_ip = #{loginip},
+            login_date = #{logindate}
+        WHERE id = #{id}
+    </update>
+
+    <select id="getPhone" resultType="com.hot.modules.sys.entity.SysUser">
+        SELECT
+            id,
+            `name`,
+            login_name AS 'loginname',
+            login_flag AS 'loginflag',
+            create_time AS 'createTime',
+            login_ip AS 'loginip',
+            login_date AS 'logindate',
+            login_flag AS 'loginflag',
+            passw_time AS 'passwTime',
+            error_time AS 'errorTime',
+            error_count AS 'errorCount',
+            remarks
+        FROM `sys_user`
+        WHERE del_flag = 0 AND phone = #{phone} LIMIT 1
+    </select>
+
+    <insert id="insertLog">
+        INSERT INTO `sys_log`(`url`,msg,ip,userid,create_time) VALUES (#{url},#{str},#{ip},#{userid},NOW())
+    </insert>
+
+    <insert id="insertCountry">
+        INSERT INTO `sys_user_country`(
+            `user_id`,
+            `country_id`
+        ) VALUES
+        <foreach collection="countrylist" item="item" separator=",">
+            (#{id},#{item})
+        </foreach>
+    </insert>
+
+    <delete id="deleteCountry">
+        DELETE FROM `sys_user_country` WHERE user_id = #{id}
+    </delete>
+
+</mapper>

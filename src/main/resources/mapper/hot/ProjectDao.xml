@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hot.modules.hot.dao.ProjectDao">
+
+	<select id="get" resultType="com.hot.modules.hot.entity.Project">
+		SELECT
+			a.id,
+			a.`name`,
+			a.state,
+			d.label AS 'states',
+			u1.`name` AS 'createUser',
+			a.create_time AS 'createTime',
+			u2.`name` AS 'updateUser',
+			a.update_time AS 'updateTime'
+		FROM a_project a
+		LEFT JOIN `sys_dict` d ON d.value = a.state AND d.type = 'project_state' AND d.del_flag = 0
+		LEFT JOIN `sys_user` u1 ON u1.`id` = a.`create_user`
+		LEFT JOIN `sys_user` u2 ON u2.`id` = a.`update_user`
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="list" resultType="com.hot.modules.hot.entity.Project">
+		SELECT
+			a.id,
+			a.`name`,
+			a.state,
+			d.label AS 'states',
+			u1.`name` AS 'createUser',
+			a.create_time AS 'createTime',
+			u2.`name` AS 'updateUser',
+			a.update_time AS 'updateTime'
+		FROM a_project a
+		LEFT JOIN `sys_dict` d ON d.value = a.state AND d.type = 'project_state' AND d.del_flag = 0
+		LEFT JOIN `sys_user` u1 ON u1.`id` = a.`create_user`
+		LEFT JOIN `sys_user` u2 ON u2.`id` = a.`update_user`
+		WHERE a.del_flag = 0
+		<if test="name != null and name != ''">
+			AND a.`name` LIKE CONCAT('%',#{name},'%')
+		</if>
+		ORDER BY a.id DESC
+	</select>
+
+	<insert id="insert" parameterType="com.hot.modules.hot.entity.Project" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO `a_project` (
+			`name`,
+			`state`,
+			`create_user`,
+			`create_time`,
+			`update_user`,
+			`update_time`
+		) VALUES (
+			#{name},
+			#{state},
+			#{createUser},
+			NOW(),
+			#{updateUser},
+			NOW()
+		)
+	</insert>
+
+	<update id="update" parameterType="com.hot.modules.hot.entity.Project">
+		UPDATE `a_project` SET
+			`name` = #{name},
+			`update_user` = #{updateUser},
+			`update_time` = NOW()
+		WHERE id = #{id}
+	</update>
+
+	<update id="delete">
+		UPDATE `a_project` SET
+		   `del_flag` = 1,
+		   `update_user` = #{updateUser},
+		   `update_time` = NOW()
+		WHERE id = #{id}
+	</update>
+
+	<select id="queryproject" resultType="java.lang.Integer">
+		SELECT COUNT(1) FROM a_hot_coop WHERE del_flag = 0 AND project_id = #{id}
+	</select>
+
+	<update id="close">
+		UPDATE `a_project` SET
+			state = 2,
+			update_user = 1,
+			update_time = NOW()
+		WHERE id IN
+		<foreach item="item" index="index" collection="ids" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+	</update>
+
+	<select id="queryProjectName" resultType="java.lang.Integer">
+		SELECT `id` FROM `a_project` WHERE del_flag = 0 AND `name` = #{name}
+	</select>
+
+</mapper>

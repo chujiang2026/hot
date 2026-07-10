@@ -1,0 +1,1041 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hot.modules.hot.dao.HotCoopDao">
+
+	<resultMap id="getMap" type="com.hot.modules.hot.entity.HotCoop">
+		<id property="id" column="id"/>
+		<result property="docNum" column="docNum"/>
+		<result property="bdName" column="bdName"/>
+		<result property="hotbId" column="hotbId"/>
+		<result property="hotsId" column="hotsId"/>
+		<result property="channel" column="channel"/>
+		<result property="country" column="country"/>
+		<result property="countrys" column="countrys"/>
+		<result property="invitId" column="invitId"/>
+		<result property="invitDocNum" column="invitDocNum"/>
+		<result property="projectId" column="projectId"/>
+		<result property="projectName" column="projectName"/>
+		<result property="state" column="state"/>
+		<collection property="prodList" ofType="com.hot.modules.hot.entity.HotCoopProduct">
+			<id property="id" column="prod.id"/>
+			<result property="productName" column="prod.productName"/>
+			<result property="productModel" column="prod.productModel"/>
+			<result property="productColor" column="prod.productColor"/>
+			<result property="videoAuth" column="prod.videoAuth"/>
+			<result property="videoAuthPur" column="prod.videoAuthPur"/>
+			<result property="adAuth" column="prod.adAuth"/>
+			<result property="coopForm" column="prod.coopForm"/>
+			<result property="commRate" column="prod.commRate"/>
+			<result property="payMethod" column="prod.payMethod"/>
+			<result property="platForm" column="prod.platForm"/>
+			<result property="payInfo" column="prod.payInfo"/>
+			<result property="payAddres" column="prod.payAddres"/>
+			<result property="coopFee" column="prod.coopFee"/>
+			<result property="sashNo" column="prod.sashNo"/>
+			<result property="carrier" column="prod.carrier"/>
+			<result property="sashTime" column="prod.sashTime"/>
+			<result property="wlStatus" column="prod.wlStatus"/>
+			<result property="dhDate" column="prod.dhDate"/>
+			<result property="utmUrl" column="prod.utmUrl"/>
+			<result property="salesPeriod" column="prod.salesPeriod"/>
+			<result property="clicks" column="prod.clicks"/>
+			<result property="sales" column="prod.sales"/>
+			<result property="disCode" column="prod.disCode"/>
+			<result property="gmv" column="prod.gmv"/>
+			<result property="roas" column="prod.roas"/>
+			<collection property="settList" ofType="com.hot.modules.hot.entity.HotCoopSett">
+				<id property="id" column="sett.id"/>
+				<result property="applyTime" column="sett.applyTime"/>
+				<result property="payTime" column="sett.payTime"/>
+				<result property="payAmount" column="sett.payAmount"/>
+			</collection>
+			<collection property="dataList" ofType="com.hot.modules.hot.entity.HotCoopData">
+				<id property="id" column="data.id"/>
+				<result property="releChan" column="data.releChan"/>
+				<result property="releAcct" column="data.releAcct"/>
+				<result property="amount" column="data.amount"/>
+				<result property="applyTime" column="data.applyTime"/>
+				<result property="payTime" column="data.payTime"/>
+				<result property="relesDate" column="data.relesDate"/>
+				<result property="vidType" column="data.vidType"/>
+				<result property="vidDraftUrl" column="data.vidDraftUrl"/>
+				<result property="mateName" column="data.mateName"/>
+				<result property="proDraftTime" column="data.proDraftTime"/>
+				<result property="releTime" column="data.releTime"/>
+				<result property="onlineUrl" column="data.onlineUrl"/>
+				<result property="adCode" column="data.adCode"/>
+				<result property="adCodeExpiry" column="data.adCodeExpiry"/>
+				<result property="duration" column="data.duration"/>
+				<result property="creativ" column="data.creativ"/>
+				<result property="creativs" column="data.creativs"/>
+				<result property="score" column="data.score"/>
+				<result property="scoreLevel" column="data.scoreLevel"/>
+				<result property="views" column="data.views"/>
+				<result property="likes" column="data.likes"/>
+				<result property="comments" column="data.comments"/>
+				<result property="shares" column="data.shares"/>
+				<result property="favors" column="data.favors"/>
+				<result property="rateNox" column="data.rateNox"/>
+				<result property="dljClicks" column="data.dljClicks"/>
+				<result property="cpm" column="data.cpm"/>
+				<result property="cpc" column="data.cpc"/>
+				<result property="period" column="data.period"/>
+				<result property="spend" column="data.spend"/>
+				<result property="plays" column="data.plays"/>
+				<result property="clicks" column="data.clicks"/>
+				<result property="conve" column="data.conve"/>
+				<result property="roas" column="data.roas"/>
+			</collection>
+		</collection>
+	</resultMap>
+
+	<select id="get" resultMap="getMap">
+		SELECT
+			a.id,
+			a.doc_num AS 'docNum',
+			a.bd_name AS 'bdName',
+			a.hotb_id AS 'hotbId',
+			a.hots_id AS 'hotsId',
+			a.channel,
+			a.country,
+			c2.name AS 'countrys',
+			a.invit_id AS 'invitId',
+			a1.doc_num AS 'invitDocNum',
+			a.project_id AS 'projectId',
+			p.name AS 'projectName',
+			a.state,
+			b.id AS 'prod.id',
+			b.product_name AS 'prod.productName',
+			b.product_model AS 'prod.productModel',
+			b.product_color AS 'prod.productColor',
+			b.video_auth AS 'prod.videoAuth',
+			b.video_auth_pur AS 'prod.videoAuthPur',
+			b.ad_auth AS 'prod.adAuth',
+			b.coop_form AS 'prod.coopForm',
+			b.comm_rate AS 'prod.commRate',
+			b.pay_method AS 'prod.payMethod',
+			b.plat_form AS 'prod.platForm',
+			b.pay_info AS 'prod.payInfo',
+			b.pay_addres AS 'prod.payAddres',
+			b.coop_fee AS 'prod.coopFee',
+			b.sash_no AS 'prod.sashNo',
+			b.carrier AS 'prod.carrier',
+			b.sash_time AS 'prod.sashTime',
+			b.wl_status AS 'prod.wlStatus',
+			b.dh_date AS 'prod.dhDate',
+			b.utm_url AS 'prod.utmUrl',
+			b.sales_period AS 'prod.salesPeriod',
+			b.clicks AS 'prod.clicks',
+			b.sales AS 'prod.sales',
+			b.dis_code AS 'prod.disCode',
+			b.gmv AS 'prod.gmv',
+			b.roas AS 'prod.roas',
+			c.id AS 'data.id',
+			c.rele_chan AS 'data.releChan',
+			c.rele_acct AS 'data.releAcct',
+			c.amount AS 'data.amount',
+			c.apply_time AS 'data.applyTime',
+			c.pay_time AS 'data.payTime',
+			c.reles_date AS 'data.relesDate',
+			c.vid_type AS 'data.vidType',
+			c.vid_draft_url AS 'data.vidDraftUrl',
+			c.mate_name AS 'data.mateName',
+			c.pro_draft_time AS 'data.proDraftTime',
+			c.rele_time AS 'data.releTime',
+			c.online_url AS 'data.onlineUrl',
+			c.ad_code AS 'data.adCode',
+			c.ad_code_expiry AS 'data.adCodeExpiry',
+			c.duration AS 'data.duration',
+			c.creativ AS 'data.creativ',
+		 	sd.label AS 'data.creativs',
+			c.score AS 'data.score',
+			c.score_level AS 'data.scoreLevel',
+			c.views AS 'data.views',
+			c.likes AS 'data.likes',
+			c.comments AS 'data.comments',
+			c.shares AS 'data.shares',
+			c.favors AS 'data.favors',
+			c.rate_nox AS 'data.rateNox',
+			c.dlj_clicks AS 'data.dljClicks',
+			c.cpm AS 'data.cpm',
+			c.cpc AS 'data.cpc',
+			c.period AS 'data.period',
+			c.spend AS 'data.spend',
+			c.plays AS 'data.plays',
+			c.clicks AS 'data.clicks',
+			c.conve AS 'data.conve',
+			c.roas AS 'data.roas',
+			d.id AS 'sett.id',
+			d.apply_time AS 'sett.applyTime',
+			d.pay_time AS 'sett.payTime',
+			d.pay_amount AS 'sett.payAmount'
+		FROM `a_hot_coop` a
+		LEFT JOIN `a_hot_invit` a1 ON a1.id = a.invit_id
+		LEFT JOIN `a_hot_coop_product` b ON b.`coop_id` = a.`id` AND b.`del_flag` = 0
+		LEFT JOIN `a_hot_coop_data` c ON c.`coop_id` = b.`id` AND c.`del_flag` = 0
+		LEFT JOIN `a_hot_coop_sett` d ON d.`coop_id` = b.`id` AND d.`del_flag` = 0
+		LEFT JOIN `a_project` p ON p.id = a.project_id
+		LEFT JOIN `sys_dict` sd ON sd.value = c.creativ AND sd.type = 'b_creativ' AND sd.del_flag = 0
+		LEFT JOIN `a_country` c2 ON c2.`id` = a.`country`
+		WHERE a.id = #{id}
+		ORDER BY d.id ASC
+	</select>
+
+	<select id="list" resultType="com.hot.modules.hot.entity.HotCoop">
+		SELECT
+			a.id,
+			a.doc_num AS 'docNum',
+			a.bd_name AS 'bdName',
+			a.hotb_id AS 'hotbId',
+			a.hots_id AS 'hotsId',
+			a.channel,
+			a.country,
+			c2.name AS 'countrys',
+			a.invit_id AS 'invitId',
+			b.doc_num AS 'invitDocNum',
+			a.project_id AS 'projectId',
+			c.name AS 'projectName',
+			a.state,
+			d.label AS 'states'
+		FROM a_hot_coop a
+		LEFT JOIN `a_hot_invit` b ON b.id = a.invit_id
+		LEFT JOIN `a_project` c ON c.id = a.project_id
+		LEFT JOIN `sys_dict` d ON d.value = a.state AND d.type = 'hot_state' AND d.del_flag = 0
+		LEFT JOIN `a_country` c2 ON c2.`id` = a.`country`
+		JOIN `sys_user_country` uc ON uc.`country_id` = a.`country`
+		WHERE a.`del_flag` = 0 AND uc.`user_id` = #{userid}
+		<if test="sdate != null and sdate != ''">
+			AND a.create_time >= #{sdate}
+		</if>
+		<if test="edate != null and edate != ''">
+			AND a.create_time &lt;= #{edate}
+		</if>
+		<if test="country != null and country != ''">
+			AND a.`country` = #{country}
+		</if>
+		<if test="bdName != null and bdName != ''">
+			AND a.`bd_name` LIKE CONCAT('%',#{bdName},'%')
+		</if>
+		<if test="state != null and state != ''">
+			AND a.`state` = #{state}
+		</if>
+		<if test="channel != null and channel != ''">
+			AND a.`channel` = #{channel}
+		</if>
+		<if test="hotsId != null and hotsId != ''">
+			AND a.`hots_id` LIKE CONCAT('%',#{hotsId},'%')
+		</if>
+		<if test="projectName != null and projectName != ''">
+			AND c.name LIKE CONCAT('%',#{projectName},'%')
+		</if>
+		<if test="ids != null and ids.length > 0 ">
+			AND a.`id` IN
+			<foreach item="item" index="index" collection="ids" separator="," open="(" close=")">
+				#{item}
+			</foreach>
+		</if>
+		ORDER BY id DESC
+	</select>
+
+	<select id="listexp" resultType="com.hot.modules.hot.entity.HotCoopExp">
+		SELECT
+			a.doc_num AS 'docNum',
+			a.bd_name AS 'bdName',
+			a.hots_id AS 'hotsId',
+			a.channel,
+			c2.name AS 'country',
+			a1.doc_num AS 'invitDocNum',
+			sd2.label AS 'state',
+			p.name AS 'projectName',
+			b.product_model AS 'productModel',
+			b.product_color AS 'productColor',
+			b.video_auth AS 'videoAuth',
+			b.video_auth_pur AS 'videoAuthPur',
+			b.ad_auth AS 'adAuth',
+			b.coop_form AS 'coopForm',
+			b.comm_rate AS 'commRate',
+			b.pay_method AS 'payMethod',
+			b.plat_form AS 'platForm',
+			b.pay_info AS 'payInfo',
+			b.pay_addres AS 'payAddres',
+			b.coop_fee AS 'coopFee',
+			b.sash_no AS 'sashNo',
+			b.carrier AS 'carrier',
+			b.sash_time AS 'sashTime',
+			b.wl_status AS 'wlStatus',
+			b.dh_date AS 'dhDate',
+			b.utm_url AS 'utmUrl',
+			b.sales_period AS 'salesPeriod',
+			b.clicks AS 'clicks',
+			b.sales AS 'sales',
+			b.dis_code AS 'disCode',
+			b.gmv AS 'gmv',
+			b.roas AS 'roas',
+			c.rele_chan AS 'dataReleChan',
+			c.rele_acct AS 'dataReleAcct',
+			c.amount AS 'dataAmount',
+			c.apply_time AS 'dataApplyTime',
+			c.pay_time AS 'dataPayTime',
+			c.reles_date AS 'dataPayTime',
+			c.vid_type AS 'dataVidType',
+			c.vid_draft_url AS 'dataVidDraftUrl',
+			c.mate_name AS 'dataMateName',
+			c.pro_draft_time AS 'dataProDraftTime',
+			c.rele_time AS 'dataReleTime',
+			c.online_url AS 'dataOnlineUrl',
+			c.ad_code AS 'dataAdCode',
+			c.ad_code_expiry AS 'dataAdCodeExpiry',
+			c.duration AS 'dataDuration',
+			sd.label AS 'dataCreativ',
+			c.score AS 'dataScore',
+			c.score_level AS 'dataScoreLevel',
+			c.views AS 'dataViews',
+			c.likes AS 'dataLikes',
+			c.comments AS 'dataComments',
+			c.shares AS 'dataShares',
+			c.favors AS 'dataFavors',
+			c.rate_nox AS 'dataRateNox',
+			c.dlj_clicks AS 'dataDljClicks',
+			c.cpm AS 'dataCpm',
+			c.cpc AS 'dataCpc',
+			c.period AS 'dataPeriod',
+			c.spend AS 'dataSpend',
+			c.plays AS 'dataPlays',
+			c.clicks AS 'dataClicks',
+			c.conve AS 'dataConve',
+			c.roas AS 'dataRoas',
+			d.apply_time AS 'settApplyTime',
+			d.pay_time AS 'settPayTime',
+			d.pay_amount AS 'settPayAmount'
+		FROM a_hot_coop a
+		LEFT JOIN `a_hot_invit` a1 ON a1.id = a.invit_id
+		LEFT JOIN `a_hot_coop_product` b ON b.`coop_id` = a.`id` AND b.`del_flag` = 0
+		LEFT JOIN `a_hot_coop_data` c ON c.`coop_id` = b.`id` AND c.`del_flag` = 0
+		LEFT JOIN `a_hot_coop_sett` d ON d.`coop_id` = b.`id` AND d.`del_flag` = 0
+		LEFT JOIN `a_project` p ON p.id = a.project_id
+		LEFT JOIN `sys_dict` sd ON sd.value = c.creativ AND sd.type = 'b_creativ' AND sd.del_flag = 0
+		LEFT JOIN `sys_dict` sd2 ON sd2.`value` = a.`state` AND sd2.`type` = 'hot_state' AND sd2.`del_flag` = 0
+		LEFT JOIN `a_country` c2 ON c2.`id` = a.`country`
+		JOIN `sys_user_country` uc ON uc.`country_id` = a.`country`
+		WHERE a.del_flag = 0 AND uc.`user_id` = #{userid}
+		<if test="sdate != null and sdate != ''">
+			AND a.create_time >= #{sdate}
+		</if>
+		<if test="edate != null and edate != ''">
+			AND a.create_time &lt;= #{edate}
+		</if>
+		<if test="country != null and country != ''">
+			AND a.`country` = #{country}
+		</if>
+		<if test="bdName != null and bdName != ''">
+			AND a.`bd_name` LIKE CONCAT('%',#{bdName},'%')
+		</if>
+		<if test="state != null and state != ''">
+			AND a.`state` = #{state}
+		</if>
+		<if test="channel != null and channel != ''">
+			AND a.`channel` = #{channel}
+		</if>
+		<if test="hotsId != null and hotsId != ''">
+			AND a.`hots_id` LIKE CONCAT('%',#{hotsId},'%')
+		</if>
+		<if test="projectName != null and projectName != ''">
+			AND c.name LIKE CONCAT('%',#{projectName},'%')
+		</if>
+		<if test="ids != null and ids.length > 0 ">
+			AND a.`id` IN
+			<foreach item="item" index="index" collection="ids" separator="," open="(" close=")">
+				#{item}
+			</foreach>
+		</if>
+		ORDER BY a.id DESC
+	</select>
+
+	<insert id="insert" parameterType="com.hot.modules.hot.entity.HotCoop" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO `a_hot_coop` (
+			`doc_num`,
+			`bd_name`,
+			`hotb_id`,
+			`hots_id`,
+			`channel`,
+			`country`,
+			`invit_id`,
+			`project_id`,
+			`create_user`,
+			`create_time`,
+			`update_user`,
+			`update_time`
+		) VALUES (
+			#{docNum},
+			#{bdName},
+			#{hotbId},
+			#{hotsId},
+			#{channel},
+			#{country},
+			#{invitId},
+			#{projectId},
+			#{createUser},
+			NOW(),
+			#{updateUser},
+			NOW()
+		)
+	</insert>
+
+	<update id="update" parameterType="com.hot.modules.hot.entity.HotCoop">
+		UPDATE `a_hot_coop` SET
+			`hotb_id` = #{hotbId},
+			`hots_id` = #{hotsId},
+			`channel` = #{channel},
+			`country` = #{country},
+			`invit_id` = #{invitId},
+			`project_id` = #{projectId},
+			`update_user` = #{updateUser},
+			`update_time` = NOW()
+		WHERE id = #{id}
+	</update>
+
+	<update id="delete">
+		UPDATE `a_hot_coop` SET
+			`del_flag` = 1,
+			`update_user` = #{userid},
+			`update_time` = NOW()
+		WHERE id = #{id}
+	</update>
+
+	<update id="close">
+		UPDATE `a_hot_coop` SET
+			`state` = 2,
+			`update_user` = #{userid},
+			`update_time` = NOW()
+		WHERE `state` = 1 AND id IN
+		<foreach item="item" index="index" collection="ids" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+	</update>
+
+	<update id="deleteList">
+		CALL coop_deleteList(#{userid}, #{id})
+	</update>
+
+	<insert id="insertData" parameterType="com.hot.modules.hot.entity.HotCoopData" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO `a_hot_coop_data` (
+			`coop_id`,
+			`rele_chan`,
+			`rele_acct`,
+			`amount`,
+			`apply_time`,
+			`pay_time`,
+			`reles_date`,
+			`vid_type`,
+			`vid_draft_url`,
+			`mate_name`,
+			`pro_draft_time`,
+			`rele_time`,
+			`online_url`,
+			`ad_code`,
+			`ad_code_expiry`,
+			`duration`,
+			`creativ`,
+			`views`,
+			`likes`,
+			`comments`,
+			`shares`,
+			`favors`,
+			`rate_nox`,
+			`dlj_clicks`,
+			`cpm`,
+			`cpc`,
+			`period`,
+			`spend`,
+			`plays`,
+			`clicks`,
+			`conve`,
+			`roas`,
+			`create_user`,
+			`create_time`,
+			`update_user`,
+			`update_time`
+		) VALUES (
+			#{coopId},
+			#{releChan},
+			#{releAcct},
+			#{amount},
+			<choose>
+				<when test="applyTime !=null and applyTime !=''">
+					#{applyTime},
+				</when>
+				<otherwise>
+					NULL,
+				</otherwise>
+			</choose>
+			<choose>
+				<when test="payTime !=null and payTime !=''">
+					#{payTime},
+				</when>
+				<otherwise>
+					NULL,
+				</otherwise>
+			</choose>
+			#{relesDate},
+			#{vidType},
+			#{vidDraftUrl},
+			#{mateName},
+			<choose>
+				<when test="proDraftTime !=null and proDraftTime !=''">
+					#{proDraftTime},
+				</when>
+				<otherwise>
+					NULL,
+				</otherwise>
+			</choose>
+			<choose>
+				<when test="releTime !=null and releTime !=''">
+					#{releTime},
+				</when>
+				<otherwise>
+					NULL,
+				</otherwise>
+			</choose>
+			#{onlineUrl},
+			#{adCode},
+			#{adCodeExpiry},
+			#{duration},
+			#{creativ},
+			#{views},
+			#{likes},
+			#{comments},
+			#{shares},
+			#{favors},
+			#{rateNox},
+			#{dljClicks},
+			#{cpm},
+			#{cpc},
+			#{period},
+			#{spend},
+			#{plays},
+			#{clicks},
+			#{conve},
+			#{roas},
+			#{createUser},
+			NOW(),
+			#{updateUser},
+			NOW()
+		)
+	</insert>
+
+	<update id="updateData" parameterType="com.hot.modules.hot.entity.HotCoopData">
+		UPDATE `a_hot_coop_data` SET
+			`rele_chan` = #{releChan},
+			`rele_acct` = #{releAcct},
+			`amount` = #{amount},
+			<choose>
+				<when test="applyTime !=null and applyTime !=''">
+					`apply_time` = #{applyTime},
+				</when>
+				<otherwise>
+					`apply_time` = NULL,
+				</otherwise>
+			</choose>
+			<choose>
+				<when test="payTime !=null and payTime !=''">
+					`pay_time` = #{payTime},
+				</when>
+				<otherwise>
+					`pay_time` = NULL,
+				</otherwise>
+			</choose>
+			`reles_date` = #{relesDate},
+			`vid_type` = #{vidType},
+			`vid_draft_url` = #{vidDraftUrl},
+			`mate_name` = #{mateName},
+			<choose>
+				<when test="proDraftTime !=null and proDraftTime !=''">
+					`pro_draft_time` = #{proDraftTime},
+				</when>
+				<otherwise>
+					`pro_draft_time` = NULL,
+				</otherwise>
+			</choose>
+			<choose>
+				<when test="releTime !=null and releTime !=''">
+					`rele_time` = #{releTime},
+				</when>
+				<otherwise>
+					`rele_time` = NULL,
+				</otherwise>
+			</choose>
+			`online_url` = #{onlineUrl},
+			`ad_code` = #{adCode},
+			`ad_code_expiry` = #{adCodeExpiry},
+			`duration` = #{duration},
+			`creativ` = #{creativ},
+			`views` = #{views},
+			`likes` = #{likes},
+			`comments` = #{comments},
+			`shares` = #{shares},
+			`favors` = #{favors},
+			`rate_nox` = #{rateNox},
+			`dlj_clicks` = #{dljClicks},
+			`cpm` = #{cpm},
+			`cpc` = #{cpc},
+			`period` = #{period},
+			`spend` = #{spend},
+			`plays` = #{plays},
+			`clicks` = #{clicks},
+			`conve` = #{conve},
+			`roas` = #{roas},
+			`update_user` = #{updateUser},
+			`update_time` = NOW(),
+			`del_flag` = 0
+		WHERE id = #{id}
+	</update>
+
+	<insert id="insertProduct" parameterType="com.hot.modules.hot.entity.HotCoopProduct" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO `a_hot_coop_product` (
+			`coop_id`,
+			`product_id`,
+			`product_name`,
+			`product_model`,
+			`product_color`,
+			`video_auth`,
+			`video_auth_pur`,
+			`ad_auth`,
+			`coop_form`,
+			`comm_rate`,
+			`pay_method`,
+			`plat_form`,
+			`pay_info`,
+			`pay_addres`,
+			`coop_fee`,
+			`sash_no`,
+			`carrier`,
+			`sash_time`,
+			`wl_status`,
+			`dh_date`,
+			`utm_url`,
+			`sales_period`,
+			`clicks`,
+			`sales`,
+			`dis_code`,
+			`gmv`,
+			`roas`,
+			`create_user`,
+			`create_time`,
+			`update_user`,
+			`update_time`
+		) VALUES (
+			#{coopId},
+			#{productId},
+			#{productName},
+			#{productModel},
+			#{productColor},
+			#{videoAuth},
+			#{videoAuthPur},
+			#{adAuth},
+			#{coopForm},
+			#{commRate},
+			#{payMethod},
+			#{platForm},
+			#{payInfo},
+			#{payAddres},
+			#{coopFee},
+			#{sashNo},
+			#{carrier},
+			<choose>
+				<when test="sashTime !=null and sashTime !=''">
+					#{sashTime},
+				</when>
+				<otherwise>
+					NULL,
+				</otherwise>
+			</choose>
+			#{wlStatus},
+			<choose>
+				<when test="dhDate !=null and dhDate !=''">
+					#{dhDate},
+				</when>
+				<otherwise>
+					NULL,
+				</otherwise>
+			</choose>
+			#{utmUrl},
+			#{salesPeriod},
+			#{clicks},
+			#{sales},
+			#{disCode},
+			#{gmv},
+			#{roas},
+			#{createUser},
+			NOW(),
+			#{updateUser},
+			NOW()
+		)
+	</insert>
+
+	<update id="updateProduct" parameterType="com.hot.modules.hot.entity.HotCoopProduct">
+		UPDATE `a_hot_coop_product` SET
+			`product_id` = #{productId},
+			`product_name` = #{productName},
+			`product_model` = #{productModel},
+			`product_color` = #{productColor},
+			`video_auth` = #{videoAuth},
+			`video_auth_pur` = #{videoAuthPur},
+			`ad_auth` = #{adAuth},
+			`coop_form` = #{coopForm},
+			`comm_rate` = #{commRate},
+			`pay_method` = #{payMethod},
+			`plat_form` = #{platForm},
+			`pay_info` = #{payInfo},
+			`pay_addres` = #{payAddres},
+			`coop_fee` = #{coopFee},
+			`sash_no` = #{sashNo},
+			`carrier` = #{carrier},
+			<choose>
+				<when test="sashTime !=null and sashTime !=''">
+					`sash_time` = #{sashTime},
+				</when>
+				<otherwise>
+					`sash_time` = NULL,
+				</otherwise>
+			</choose>
+			`wl_status` = #{wlStatus},
+			<choose>
+				<when test="dhDate !=null and dhDate !=''">
+					`dh_date` = #{dhDate},
+				</when>
+				<otherwise>
+					`dh_date` = NULL,
+				</otherwise>
+			</choose>
+			`utm_url` = #{utmUrl},
+			`sales_period` = #{salesPeriod},
+			`clicks` = #{clicks},
+			`sales` = #{sales},
+			`dis_code` = #{disCode},
+			`gmv` = #{gmv},
+			`roas` = #{roas},
+			`update_user` = #{updateUser},
+			`update_time` = NOW(),
+			`del_flag` = 0
+		WHERE id = #{id}
+	</update>
+	
+	<insert id="insertSett" parameterType="com.hot.modules.hot.entity.HotCoopSett" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO `a_hot_coop_sett` (
+			`coop_id`,
+			`apply_time`,
+			`pay_time`,
+			`pay_amount`,
+			`create_user`,
+			`create_time`,
+			`update_user`,
+			`update_time`
+		) VALUES (
+			#{coopId},
+			<choose>
+				<when test="applyTime !=null and applyTime !=''">
+					#{applyTime},
+				</when>
+				<otherwise>
+					NULL,
+				</otherwise>
+			</choose>
+			<choose>
+				<when test="payTime !=null and payTime !=''">
+					#{payTime},
+				</when>
+				<otherwise>
+					NULL,
+				</otherwise>
+			</choose>
+			#{payAmount},
+			#{createUser},
+			NOW(),
+			#{updateUser},
+			NOW()
+		)
+	</insert>
+
+	<update id="updateSett" parameterType="com.hot.modules.hot.entity.HotCoopSett">
+		UPDATE `a_hot_coop_sett` SET
+		    <if test="applyTime !=null and applyTime !=''">
+				`apply_time` = #{applyTime},
+			</if>
+			<if test="payTime !=null and payTime !=''">
+				`pay_time` = #{payTime},
+			</if>
+			`pay_amount` = #{payAmount},
+			`update_user` = #{updateUser},
+			`update_time` = NOW(),
+			`del_flag` = 0
+		WHERE id = #{id}
+	</update>
+
+	<update id="closeInvite">
+		UPDATE `a_hot_invit` SET
+			 `state` = 2,
+			 `reason` = #{reason},
+			 `update_user` = #{userid},
+			 `update_time` = NOW()
+		WHERE `state` = 1 AND id = #{id}
+	</update>
+	
+	<select id="coop" resultType="com.hot.modules.hot.entity.HotCoopReport">
+		SELECT
+			a.`id`,
+			a.doc_num AS docNum,
+			a.bd_name AS bdName,
+			a.hots_id AS hotsId,
+			a.channel,
+			a.country,
+			c2.name AS "countrys",
+			a.state,
+			d.`label` AS states,
+			b.rele_chan AS releChan,
+			b.rele_acct AS releAcct,
+			b.vid_type AS vidType,
+			b.vid_draft_url AS vidDraftUrl,
+			b.online_url AS onlineUrl,
+			b.views,
+			b.likes,
+			b.comments,
+			b.shares,
+			b.period,
+			b.spend,
+			b.plays,
+			b.clicks AS dclicks,
+			b.conve,
+			b.roas AS droas,
+			c.product_model AS productModel,
+			c.product_color AS productColor,
+			c.video_auth_pur AS videoAuthPur,
+			c.coop_form AS coopForm,
+			c.plat_form AS platForm,
+			c.coop_fee AS coopFee,
+			c.sash_no AS sashNo,
+			c.carrier,
+			c.wl_status AS wlStatus,
+			c.utm_url AS utmUrl,
+			c.sales_period AS salesPeriod,
+			c.clicks,
+			c.sales,
+			c.gmv AS gmv,
+			c.roas AS roas
+		FROM `a_hot_coop` a
+		LEFT JOIN `a_hot_coop_data` b ON b.`coop_id` = a.`id` AND b.`del_flag` = 0
+		LEFT JOIN `a_hot_coop_product` c ON c.`coop_id` = a.`id` AND c.`del_flag` = 0
+		LEFT JOIN `sys_dict` d ON d.`value` = a.`state` AND d.`type` = 'hot_state' AND d.`del_flag` = 0
+		LEFT JOIN `a_country` c2 ON c2.`id` = a.`country`
+		JOIN `sys_user_country` uc ON uc.`country_id` = a.`country`
+		WHERE a.`del_flag` = 0 AND uc.`user_id` = #{userid}
+		<if test="country != null and country != ''">
+			AND a.`country` = #{country}
+		</if>
+		<if test="bdName != null and bdName != ''">
+			AND a.`bd_name` LIKE CONCAT('%',#{bdName},'%')
+		</if>
+		<if test="state != null and state != ''">
+			AND a.`state` = #{state}
+		</if>
+		<if test="channel != null and channel != ''">
+			AND a.`channel` = #{channel}
+		</if>
+		<if test="hotsId != null and hotsId != ''">
+			AND a.`hots_id` LIKE CONCAT('%',#{hotsId},'%')
+		</if>
+	</select>
+
+	<select id="coopexp" resultType="com.hot.modules.hot.entity.HotCoopExp">
+		SELECT
+			a.doc_num AS 'docNum',
+			a.bd_name AS 'bdName',
+			a.hots_id AS 'hotsId',
+			a.channel,
+			c2.name AS 'country',
+			a1.doc_num AS 'invitDocNum',
+			sd2.label AS 'state',
+			p.name AS 'projectName',
+			b.product_model AS 'productModel',
+			b.product_color AS 'productColor',
+			b.video_auth AS 'videoAuth',
+			b.video_auth_pur AS 'videoAuthPur',
+			b.ad_auth AS 'adAuth',
+			b.coop_form AS 'coopForm',
+			b.comm_rate AS 'commRate',
+			b.pay_method AS 'payMethod',
+			b.plat_form AS 'platForm',
+			b.pay_info AS 'payInfo',
+			b.pay_addres AS 'payAddres',
+			b.coop_fee AS 'coopFee',
+			b.sash_no AS 'sashNo',
+			b.carrier AS 'carrier',
+			b.sash_time AS 'sashTime',
+			b.wl_status AS 'wlStatus',
+			b.dh_date AS 'dhDate',
+			b.utm_url AS 'utmUrl',
+			b.sales_period AS 'salesPeriod',
+			b.clicks AS 'clicks',
+			b.sales AS 'sales',
+			b.dis_code AS 'disCode',
+			b.gmv AS 'gmv',
+			b.roas AS 'roas',
+			c.rele_chan AS 'dataReleChan',
+			c.rele_acct AS 'dataReleAcct',
+			c.amount AS 'dataAmount',
+			c.apply_time AS 'dataApplyTime',
+			c.pay_time AS 'dataPayTime',
+			c.reles_date AS 'dataPayTime',
+			c.vid_type AS 'dataVidType',
+			c.vid_draft_url AS 'dataVidDraftUrl',
+			c.mate_name AS 'dataMateName',
+			c.pro_draft_time AS 'dataProDraftTime',
+			c.rele_time AS 'dataReleTime',
+			c.online_url AS 'dataOnlineUrl',
+			c.ad_code AS 'dataAdCode',
+			c.ad_code_expiry AS 'dataAdCodeExpiry',
+			c.duration AS 'dataDuration',
+			sd.label AS 'dataCreativ',
+			c.score AS 'dataScore',
+			c.score_level AS 'dataScoreLevel',
+			c.views AS 'dataViews',
+			c.likes AS 'dataLikes',
+			c.comments AS 'dataComments',
+			c.shares AS 'dataShares',
+			c.favors AS 'dataFavors',
+			c.rate_nox AS 'dataRateNox',
+			c.dlj_clicks AS 'dataDljClicks',
+			c.cpm AS 'dataCpm',
+			c.cpc AS 'dataCpc',
+			c.period AS 'dataPeriod',
+			c.spend AS 'dataSpend',
+			c.plays AS 'dataPlays',
+			c.clicks AS 'dataClicks',
+			c.conve AS 'dataConve',
+			c.roas AS 'dataRoas',
+			d.apply_time AS 'settApplyTime',
+			d.pay_time AS 'settPayTime',
+			d.pay_amount AS 'settPayAmount'
+		FROM a_hot_coop a
+		LEFT JOIN `a_hot_invit` a1 ON a1.id = a.invit_id
+		LEFT JOIN `a_hot_coop_product` b ON b.`coop_id` = a.`id` AND b.`del_flag` = 0
+		LEFT JOIN `a_hot_coop_data` c ON c.`coop_id` = b.`id` AND c.`del_flag` = 0
+		LEFT JOIN `a_hot_coop_sett` d ON d.`coop_id` = b.`id` AND d.`del_flag` = 0
+		LEFT JOIN `a_project` p ON p.id = a.project_id
+		LEFT JOIN `sys_dict` sd ON sd.value = c.creativ AND sd.type = 'b_creativ' AND sd.del_flag = 0
+		LEFT JOIN `sys_dict` sd2 ON sd2.`value` = a.`state` AND sd2.`type` = 'hot_state' AND sd2.`del_flag` = 0
+		LEFT JOIN `a_country` c2 ON c2.`id` = a.`country`
+		JOIN `sys_user_country` uc ON uc.`country_id` = a.`country`
+		WHERE a.`del_flag` = 0 AND uc.`user_id` = #{userid}
+		<if test="country != null and country != ''">
+			AND a.`country` = #{country}
+		</if>
+		<if test="bdName != null and bdName != ''">
+			AND a.`bd_name` LIKE CONCAT('%',#{bdName},'%')
+		</if>
+		<if test="state != null and state != ''">
+			AND a.`state` = #{state}
+		</if>
+		<if test="channel != null and channel != ''">
+			AND a.`channel` = #{channel}
+		</if>
+		<if test="hotsId != null and hotsId != ''">
+			AND a.`hots_id` LIKE CONCAT('%',#{hotsId},'%')
+		</if>
+	</select>
+
+	<!-- 判断是否存在,系统自动关闭的邀约单，不允许引用到合作单，通过a_hot_invit_log表是否有数据，判断为系统关闭的单 -->
+	<select id="isExist" resultType="java.util.Map">
+		SELECT
+			IF(c.id IS NULL,1,2) AS 'state',
+			b.id
+		FROM `a_hot_invit` a
+		LEFT JOIN `a_hot_coop` b ON b.invit_id = a.id AND b.del_flag = 0
+		LEFT JOIN `a_hot_invit_log` c ON c.invit_id = a.id
+		WHERE a.id = #{id} AND a.del_flag = 0
+	</select>
+
+	<update id="updateHotState">
+		UPDATE `a_hot` SET
+			state = 5 -- 历史合作
+		WHERE state = 4 -- 合作中
+			AND id IN (
+				-- 全部关闭的红人合作单，变更状态为历史合作
+				SELECT
+					a.hot_id
+				FROM (
+					-- 通过红人详情Id，查询已关联的合作单，统计合作单数，统计已关闭的合作单数，判断是否全部关闭
+					SELECT
+						a.hot_id,
+						COUNT(1) * 2 AS 'num',
+						SUM(b.state) AS 'sum'
+					FROM (
+						-- 通过红人管理主Id，查询红人详情Id
+						SELECT
+							a.id,
+							a.hot_id
+						FROM `a_hot_basic` a
+						WHERE a.del_flag = 0 AND a.hot_id IN (
+							-- 通过红人详情Id，查询红人管理主Id
+							SELECT DISTINCT
+								b.id
+							FROM `a_hot_basic` a
+							JOIN `a_hot` b ON b.id = a.hot_id
+							WHERE a.del_flag = 0 AND a.id IN (
+								-- 查询已关闭合作的红人详情Id
+								SELECT DISTINCT
+									hotb_id
+								FROM `a_hot_coop`
+								WHERE del_flag = 0 AND state = 2)
+						) GROUP BY a.id
+					) a JOIN `a_hot_coop` b ON b.hotb_id = a.id
+					GROUP BY a.hot_id
+				) a
+			WHERE a.num = a.sum )
+	</update>
+
+	<update id="closeHotState">
+		UPDATE `a_hot` a JOIN `a_hot_basic` b ON b.hot_id = a.id JOIN `a_hot_coop` c ON c.hotb_id = b.id SET a.state = 4 WHERE c.id = #{id}
+	</update>
+
+	<select id="queryCreativ" resultType="java.lang.String">
+		SELECT
+			GROUP_CONCAT(b.doc_num) AS 'msg'
+		FROM (
+			SELECT
+				a.id,
+				SUM(IF(LENGTH(IFNULL(c.creativ, ''))=0,1,0)) AS 'num'
+			FROM `a_hot_coop` a
+			JOIN `a_hot_coop_product` b ON b.coop_id = a.id AND b.del_flag = 0
+			JOIN `a_hot_coop_data` c ON c.coop_id = b.id AND c.del_flag = 0
+			WHERE a.del_flag = 0 AND a.id IN
+			<foreach item="item" index="index" collection="ids" separator="," open="(" close=")">
+				#{item}
+			</foreach>
+			GROUP BY a.id
+		) a JOIN `a_hot_coop` b ON b.id = a.id
+		WHERE a.num > 0
+	</select>
+
+	<select id="queryprojectid" resultType="java.lang.Integer">
+		SELECT DISTINCT id FROM `a_hot_coop` WHERE `state` = 1 AND project_id IN
+		<foreach item="item" index="index" collection="ids" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+	</select>
+
+	<select id="queryHotbId" resultType="java.lang.Integer">
+		SELECT DISTINCT hotb_id FROM `a_hot_coop` WHERE `state` = 2 AND id IN
+		<foreach item="item" index="index" collection="ids" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+	</select>
+
+	<update id="sum_score_level">
+		CALL sum_score_level(#{id})
+	</update>
+
+	<update id="sum_hot_score_level">
+		CALL sum_hot_score_level(#{id})
+	</update>
+
+</mapper>

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hot.modules.erp.dao.ErpDao">
+
+    <!-- 批量保存物料数据 -->
+    <insert id="saveBatch" parameterType="java.util.List">
+        INSERT INTO `erp_material` (
+        `material_id`,
+        `model_number`,
+        `color`,
+        `create_time`,
+        `update_time`,
+        `del_flag`
+        ) VALUES
+        <foreach collection="list" item="item" separator=",">
+            (
+            #{item.materialId, jdbcType=VARCHAR},
+            #{item.modelNumber, jdbcType=VARCHAR},
+            #{item.color, jdbcType=VARCHAR},
+            NOW(),
+            NOW(),
+            '0'
+            )
+        </foreach>
+    </insert>
+
+    <!-- 批量保存或更新物料数据（存在则更新） -->
+    <insert id="saveOrUpdateBatch" parameterType="java.util.List">
+        INSERT INTO `erp_material` (
+        `material_id`,
+        `model_number`,
+        `color`,
+        `create_time`,
+        `update_time`,
+        `del_flag`
+        ) VALUES
+        <foreach collection="list" item="item" separator=",">
+            (
+            #{item.materialId, jdbcType=VARCHAR},
+            #{item.modelNumber, jdbcType=VARCHAR},
+            #{item.color, jdbcType=VARCHAR},
+            NOW(),
+            NOW(),
+            '0'
+            )
+        </foreach>
+        ON DUPLICATE KEY UPDATE
+        `model_number` = VALUES(`model_number`),
+        `color` = VALUES(`color`),
+        `update_time` = NOW(),
+        `del_flag` = '0'
+    </insert>
+
+    <!-- 清空物料表 -->
+    <delete id="truncateMaterial">
+        TRUNCATE TABLE `erp_material`
+    </delete>
+
+    <!-- 根据物料编码查询是否存在 -->
+    <select id="countByMaterialId" parameterType="java.lang.String" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM `erp_material` WHERE `material_id` = #{materialId} AND `del_flag` = '0'
+    </select>
+</mapper>

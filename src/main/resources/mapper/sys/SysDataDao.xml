@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hot.modules.sys.dao.SysDataDao">
+
+	<select id="get" resultType="com.hot.modules.sys.entity.SysData">
+		SELECT id,`name`,`type` FROM `sys_data` WHERE id = #{id}
+	</select>
+
+	<select id="fieldList" resultType="com.hot.modules.sys.entity.SysField">
+		SELECT
+			b.`id`,
+			b.`table`,
+			b.`fields`,
+			b.`field_msg`,
+			a.`role`
+		FROM `sys_data_field` a
+		JOIN `sys_field` b ON b.`id` = a.`field_id`
+		WHERE a.`data_id` = #{id}
+	</select>
+
+	<select id="list" resultType="com.hot.modules.sys.entity.SysData">
+		SELECT
+			a.id,
+			a.`name`,
+			a.`type`,
+			b.label AS 'types'
+		FROM `sys_data` a
+		LEFT JOIN `sys_dict` b ON b.`value` = a.`type` AND b.`type` = 'sys_data_type' AND b.`del_flag` = 0
+		WHERE a.del_flag = 0
+		<if test="name != null and name != ''">
+			AND a.`name` LIKE CONCAT('%', #{name}, '%')
+		</if>
+	</select>
+
+	<insert id="insert" parameterType="com.hot.modules.sys.entity.SysData" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO `sys_data` (
+			`name`,
+			`type`,
+			create_user,
+			create_time,
+			update_user,
+			update_time
+		) VALUES (
+			#{name},
+			#{type},
+			#{createUser},
+			NOW(),
+			#{createUser},
+			NOW()
+		)
+	</insert>
+
+	<update id="update" parameterType="com.hot.modules.sys.entity.SysData">
+		UPDATE `sys_data` SET
+			`name` = #{name},
+			`type` = #{type},
+			`update_user` = #{createUser},
+			`update_time` = NOW()
+		WHERE id = #{id}
+	</update>
+
+	<update id="delete">
+		UPDATE `sys_data` SET
+			`del_flag` = 1,
+			`update_user` = #{createUser},
+			`update_time` = NOW()
+		WHERE id = #{id}
+	</update>
+
+	<delete id="deleteFields">
+		DELETE FROM `sys_data_field` WHERE data_id = #{id}
+	</delete>
+
+	<insert id="insertFields">
+		INSERT INTO `sys_data_field`(
+			`data_id`,
+			`field_id`,
+			`role`
+		) VALUES
+		<foreach collection="list" item="item" separator=",">
+			(#{id},#{item.id},#{item.role})
+		</foreach>
+	</insert>
+
+	<select id="fieldListType" resultType="com.hot.modules.sys.entity.SysField">
+		SELECT
+			a.`id`,
+			a.`table`,
+			a.`fields`,
+			a.`field_msg`
+		FROM `sys_field` a
+		WHERE a.`type` = #{type}
+	</select>
+
+</mapper>

@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hot.modules.sys.dao.SysButtDao">
+
+	<select id="get" resultType="com.hot.modules.sys.entity.SysButt">
+		SELECT
+			a.id,
+			a.menu_id AS 'menuId',
+			b.`title` AS 'menuName',
+			a.title,
+			a.`sign`,
+			a.icon,
+			a.sort
+		FROM `sys_butt` a
+		LEFT JOIN `sys_menu` b ON b.`id` = a.`menu_id` AND b.`del_flag` = 0
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="list" resultType="com.hot.modules.sys.entity.SysButt">
+		SELECT
+			a.id,
+			a.menu_id AS 'menuId',
+			b.`title` AS 'menuName',
+			a.title,
+			a.`sign`,
+			a.icon,
+			a.sort
+		FROM `sys_butt` a
+		LEFT JOIN `sys_menu` b ON b.`id` = a.`menu_id`
+		WHERE a.del_flag = 0
+		ORDER BY a.sort ASC
+	</select>
+
+	<insert id="insert" parameterType="com.hot.modules.sys.entity.SysButt" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO `sys_butt` (
+			`menu_id`,
+			`title`,
+			`sign`,
+			`icon`,
+			`sort`,
+			`create_user`,
+			`create_time`,
+			`update_user`,
+			`update_time`
+		) VALUES (
+			#{menuId},
+			#{title},
+			#{sign},
+			#{icon},
+			#{sort},
+		    #{createUser},
+			NOW(),
+			#{createUser},
+			NOW()
+		)
+	</insert>
+
+	<update id="update" parameterType="com.hot.modules.sys.entity.SysButt">
+		UPDATE `sys_butt` SET
+			`menu_id` = #{menuId},
+			`title` = #{title},
+			`sign` = #{sign},
+			`icon` = #{icon},
+			`sort` = #{sort},
+			`update_user` = #{createUser},
+			`update_time` = NOW()
+		WHERE id = #{id}
+	</update>
+
+	<update id="delete">
+		UPDATE `sys_butt` SET
+			`update_user` = #{createUser},
+			`update_time` = NOW(),
+			`del_flag` = 1
+		WHERE id = #{id}
+	</update>
+
+	<select id="rolelist" resultType="com.hot.modules.sys.entity.SysRole">
+		SELECT
+			id,
+			`name`,
+			update_time AS 'updateTime'
+		FROM `sys_butt_role`
+		WHERE del_flag = 0
+		<if test="name != null and name != ''">
+			AND name LIKE CONCAT("%",#{name},"%")
+		</if>
+		ORDER BY update_time DESC
+	</select>
+
+	<resultMap id="roleMap" type="com.hot.modules.sys.entity.SysRole">
+		<id property="id" column="id"/>
+		<result property="name" column="name"/>
+		<collection property="list" ofType="integer" column="butt_id" javaType="java.util.ArrayList">
+			<id property="moduId" column="butt_id"/>
+		</collection>
+	</resultMap>
+
+	<select id="roleget" resultMap="roleMap">
+		SELECT
+			a.id,
+			a.name,
+			b.`butt_id`
+		FROM `sys_butt_role` a
+		LEFT JOIN `sys_butt_role_data` b ON b.`butt_role_id` = a.`id`
+		WHERE a.id = #{id}
+	</select>
+
+	<insert id="insertRole" parameterType="com.hot.modules.sys.entity.SysRole" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO `sys_butt_role`(
+			`name`,
+			`create_user`,
+			`create_time`,
+			`update_user`,
+			`update_time`
+		) VALUES (
+			#{name},
+			#{createUser},
+			NOW(),
+			#{createUser},
+			NOW()
+		)
+	</insert>
+
+	<update id="updateRole">
+		UPDATE `sys_butt_role` SET
+			`name` = #{name},
+			`update_user` = #{createUser},
+			`update_time` = NOW()
+		WHERE id = #{id}
+	</update>
+
+	<update id="roledelete">
+		UPDATE `sys_butt_role` SET
+			`del_flag` = 1,
+			`update_user` = #{createUser},
+			`update_time` = NOW()
+		WHERE id = #{id}
+	</update>
+
+	<insert id="insertRoleData">
+		INSERT INTO `sys_butt_role_data`(
+			`butt_id`,
+			`butt_role_id`
+		) VALUES
+		<foreach collection="list" item="item" separator=",">
+			(#{item},#{id})
+		</foreach>
+	</insert>
+
+	<delete id="deleteRoleData">
+		DELETE FROM `sys_butt_role_data` WHERE butt_role_id = #{id}
+	</delete>
+
+	<resultMap id="menuButtMap" type="com.hot.modules.sys.entity.SysRoleMenu">
+		<id property="menuId" column="menuId"/>
+		<result property="parentId" column="parentId"/>
+		<result property="menu" column="menu"/>
+		<collection property="list" ofType="map">
+			<id property="id" column="id"/>
+			<result property="title" column="title"/>
+		</collection>
+	</resultMap>
+
+	<select id="menuButt" resultMap="menuButtMap" parameterType="map">
+		SELECT
+			b.`id` AS 'menuId',
+			b.`parent_id` AS 'parentId',
+			b.`title` AS 'menu',
+			a.`id`,
+			a.`title`
+		FROM `sys_butt` a
+		LEFT JOIN `sys_menu` b ON b.`id` = a.`menu_id` AND b.`del_flag` = 0
+		WHERE a.`del_flag` = 0
+		GROUP BY b.`id`, a.`id`
+		ORDER BY b.sort ASC, a.sort ASC
+	</select>
+
+
+</mapper>

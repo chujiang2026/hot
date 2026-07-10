@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hot.modules.hot.dao.HomeDao">
+
+	<select id="data" resultType="java.util.Map">
+		SELECT
+			a.num,
+			b.amount
+		FROM (
+			SELECT
+				COUNT(1) AS 'num'
+			FROM `a_hot` a
+			JOIN `a_hot_basic` b ON b.hot_id = a.id AND b.del_flag = 0
+			JOIN `sys_user_country` uc ON uc.`country_id` = b.`country`
+			WHERE a.del_flag = 0 AND uc.`user_id` = #{userid} AND YEAR(b.create_time) &lt;= #{date}
+		) a JOIN (
+			SELECT
+				SUM(IFNULL(c.`pay_amount`,0)) AS 'amount'
+			FROM `a_hot_coop` a
+			LEFT JOIN `a_hot_coop_product` b ON b.`coop_id` = a.`id` AND b.`del_flag` = 0
+			LEFT JOIN `a_hot_coop_sett` c ON c.`coop_id` = b.`id` AND c.`del_flag` = 0
+			JOIN `sys_user_country` uc ON uc.`country_id` = a.`country`
+			WHERE a.`del_flag` = 0 AND uc.`user_id` = #{userid} AND YEAR(c.`pay_time`) &lt;= #{date}
+		) b ON 1=1
+	</select>
+
+	<select id="cotry" resultType="java.util.Map">
+		SELECT
+			c.`name` AS 'country',
+			COUNT(1) AS 'num'
+		FROM `a_hot` a
+		JOIN `a_hot_basic` b ON b.hot_id = a.id AND b.del_flag = 0
+		JOIN `sys_user_country` uc ON uc.`country_id` = b.`country`
+		LEFT JOIN `a_country` c ON c.`id` = b.country
+		WHERE a.del_flag = 0 AND uc.`user_id` = #{userid} AND YEAR(b.create_time) &lt;= #{date}
+		GROUP BY c.`name`
+	</select>
+
+	<select id="trend" resultType="java.util.Map">
+		SELECT
+			a.online, -- 本年度上线数量
+			a.views, -- 本年度观看量
+			a.intr, -- 互动率
+			b.amount, -- 本年度红人总花费
+			a.spend, -- 本年度投流总花费
+			ROUND((b.amount/a.views)*1000,4) AS 'cpm', -- 本年度CPM
+			c.gmv, -- GMV
+			ROUND(c.gmv/(b.amount+a.spend),4) AS 'roas' -- ROAS
+		FROM (
+			SELECT
+				COUNT(a.online_url) AS 'online', -- 本年度上线数量：内容发布时间的维度统计内容数量
+				SUM(a.views) AS 'views', -- 本年度观看量：内容发布时间的维度统计内容的观看量之和
+				ROUND((SUM(a.likes)+SUM(a.comments)+SUM(a.shares)+SUM(a.favors))/SUM(a.views),4) AS 'intr', -- 互动率=(点赞+评论+分享+收藏)/观看量，每个变量是统计内容里对应的数据之和
+				SUM(a.spend) AS 'spend' -- 本年度投流总花费：内容发布时间的维度统计内容的广告消耗金额之和
+			FROM a_hot_coop_data a
+			LEFT JOIN `a_hot_coop_product` b ON b.id = a.coop_id AND b.del_flag = 0
+			LEFT JOIN `a_hot_coop` c ON c.id = b.coop_id AND c.del_flag = 0
+			JOIN `sys_user_country` uc ON uc.`country_id` = c.`country`
+			WHERE a.del_flag = 0 AND uc.`user_id` = #{userid} AND YEAR(a.rele_time) = #{date}
+			<if test="country != null and country != ''">
+				AND c.`country` = #{country}
+			</if>
+		) a LEFT JOIN (
+			SELECT
+				SUM(IFNULL(c.`pay_amount`,0)) AS 'amount'
+			FROM `a_hot_coop` a
+			LEFT JOIN `a_hot_coop_product` b ON b.`coop_id` = a.`id` AND b.`del_flag` = 0
+			LEFT JOIN `a_hot_coop_sett` c ON c.`coop_id` = b.`id` AND c.`del_flag` = 0
+			JOIN `sys_user_country` uc ON uc.`country_id` = a.`country`
+			WHERE a.`del_flag` = 0 AND uc.`user_id` = #{userid} AND YEAR(c.`pay_time`) = #{date}
+			<if test="country != null and country != ''">
+				AND a.`country` = #{country}
+			</if>
+		) b ON 1=1 LEFT JOIN (
+			SELECT
+				SUM(a.gmv) AS 'gmv'
+			FROM `a_hot_coop_product` a
+			LEFT JOIN `a_hot_coop_product` b ON b.id = a.coop_id AND b.del_flag = 0
+			LEFT JOIN `a_hot_coop` c ON c.id = b.coop_id AND c.del_flag = 0
+		    JOIN `sys_user_country` uc ON uc.`country_id` = c.`country`
+			WHERE a.del_flag = 0 AND uc.`user_id` = #{userid} AND YEAR(a.sales_period) = #{date}
+			<if test="country != null and country != ''">
+				AND c.`country` = #{country}
+			</if>
+		) c ON 1=1
+	</select>
+
+</mapper>
